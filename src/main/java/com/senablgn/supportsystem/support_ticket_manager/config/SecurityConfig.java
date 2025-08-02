@@ -1,5 +1,6 @@
 package com.senablgn.supportsystem.support_ticket_manager.config;
 
+import com.senablgn.supportsystem.support_ticket_manager.jwt.JwtAuthFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 	private UserDetailsService userDetailsService;
+	private JwtAuthFilter jwtAuthFilter;
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf->csrf.disable())
@@ -26,8 +30,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/auth/**").permitAll()
 						.anyRequest().authenticated())
 				.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				//.addFilterBefore(null)
-				.authenticationProvider(null);
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.authenticationProvider(daoAuthenticationProvider());
 		return http.build();
 	}
 	@Bean
