@@ -19,6 +19,6 @@ public class AuthController {
 
 	@PostMapping("/register")
 	public ResponseEntity<DataResult>register(@RequestBody CreateUserRequest createUserRequest) {
-		return ResponseEntity.ok(new SuccessDataResult(this.authService.register(createUserRequest)));
+		return ResponseEntity.ok(new SuccessDataResult("user registered", authService.register(createUserRequest)));
 	}
 }
