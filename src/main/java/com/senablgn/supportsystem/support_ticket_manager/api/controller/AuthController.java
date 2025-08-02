@@ -5,6 +5,7 @@ import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.SuccessDataResult;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.AuthRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.CreateUserRequest;
+import com.senablgn.supportsystem.support_ticket_manager.dto.request.RefreshTokenRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,5 +26,9 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<DataResult>login(@RequestBody AuthRequest authRequest) {
 		return ResponseEntity.ok(new SuccessDataResult("user login", authService.login(authRequest)));
+	}
+	@PostMapping("/refreshToken")
+	public ResponseEntity<DataResult>refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+		return ResponseEntity.ok(new SuccessDataResult("user refresh token", authService.refreshToken(refreshTokenRequest)));
 	}
 }

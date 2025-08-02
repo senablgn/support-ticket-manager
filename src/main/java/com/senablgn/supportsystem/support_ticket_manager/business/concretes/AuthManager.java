@@ -60,7 +60,11 @@ public class AuthManager implements AuthService {
 
 	@Override
 	public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-		RefreshToken refreshToken = this.refreshTokenRepository.findByRefreshToken(refreshTokenRequest.getRefreshToken()).orElseThrow();
+		RefreshToken refreshToken = this.refreshTokenRepository.findByToken(refreshTokenRequest.getRefreshToken())
+				.orElseThrow(() -> new RuntimeException("Refresh token not found"));
+		if(refreshToken.getExpiryDate().before(new Date())) {
+			throw new RuntimeException("Refresh token expired");
+		}
 		UserDetails userDetails = this.userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
 		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
 		String newRefreshToken = this.jwtUtil.generateRefreshToken(userDetails);
