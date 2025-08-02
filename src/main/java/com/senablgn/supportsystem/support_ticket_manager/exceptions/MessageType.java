@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum MessageType {
 	GENERAL_ERROR("1","General error has occured"),
-	TOKEN_NOT_FOUND("2","Token not found");
+	TOKEN_NOT_FOUND("2","Token not found"),
+	MISSING_TOKEN("3","Token is missing"),
+	INVALID_TOKEN("4","Token is already invalid");
 	private String code;
 	private String message;
 }

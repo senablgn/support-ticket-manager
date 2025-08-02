@@ -2,6 +2,8 @@ package com.senablgn.supportsystem.support_ticket_manager.business.concretes;
 
 import java.util.Date;
 
+import com.senablgn.supportsystem.support_ticket_manager.dataAccess.BlackListedTokenRepository;
+import com.senablgn.supportsystem.support_ticket_manager.entities.BlackListedToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,6 +40,7 @@ public class AuthManager implements AuthService {
 	private AuthenticationManager authenticationManager;
 	private UserDetailsService userDetailsService;
 	private RefreshTokenRepository refreshTokenRepository;
+	private BlackListedTokenRepository  blackListedTokenRepository;
 
 	@Override
 	public UserResponse register(CreateUserRequest createUserRequest) {
@@ -80,5 +83,24 @@ public class AuthManager implements AuthService {
 		refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 7));
 		this.refreshTokenRepository.save(refreshToken);
 		return new AuthResponse(accessToken, newRefreshToken);
+	}
+
+	@Override
+	public void logout(String authHeader) {
+		if(authHeader == null && !authHeader.startsWith("Bearer ")) {
+			throw new BaseException(new ErrorMessage(MessageType.MISSING_TOKEN, authHeader));
+		}
+		String token = authHeader.substring(7);
+		if(blackListedTokenRepository.existsByToken(token)) {
+			throw new BaseException(new ErrorMessage(MessageType.INVALID_TOKEN, token));
+		}
+		BlackListedToken blackListedToken=new BlackListedToken();
+		blackListedToken.setToken(token);
+		blackListedToken.setBlackListedAt(new Date());
+		blackListedToken.setExpiresAt(this.jwtUtil.extractExpiration(token));
+		String username = this.jwtUtil.extractUsername(token);
+		User user = this.userRepository.findByUsername(username).orElseThrow();
+		blackListedToken.setUser(user);
+		this.blackListedTokenRepository.save(blackListedToken);
 	}
 }
