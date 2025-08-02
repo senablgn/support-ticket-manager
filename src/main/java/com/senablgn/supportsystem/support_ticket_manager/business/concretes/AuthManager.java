@@ -16,6 +16,7 @@ import com.senablgn.supportsystem.support_ticket_manager.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,8 +46,9 @@ public class AuthManager implements AuthService {
 
 	@Override
 	public AuthResponse login(AuthRequest authRequest) {
-		this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-		UserDetails userDetails = this.userDetailsService.loadUserByUsername(authRequest.getUsername());
+		Authentication authenticate = this.authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+		UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
 		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
 		String refreshToken = this.jwtUtil.generateRefreshToken(userDetails);
 		User user = this.userRepository.findByUsername(authRequest.getUsername()).orElseThrow();
