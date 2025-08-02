@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 public enum MessageType {
-	GENERAL_ERROR("1","General error has occured");
+	GENERAL_ERROR("1","General error has occured"),
+	TOKEN_NOT_FOUND("2","Token not found");
 	private String code;
 	private String message;
 }
