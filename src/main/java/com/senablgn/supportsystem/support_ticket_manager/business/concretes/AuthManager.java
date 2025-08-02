@@ -7,6 +7,7 @@ import com.senablgn.supportsystem.support_ticket_manager.dataAccess.RefreshToken
 import com.senablgn.supportsystem.support_ticket_manager.dataAccess.UserRepository;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.AuthRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.CreateUserRequest;
+import com.senablgn.supportsystem.support_ticket_manager.dto.request.RefreshTokenRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.response.AuthResponse;
 import com.senablgn.supportsystem.support_ticket_manager.dto.response.UserResponse;
 import com.senablgn.supportsystem.support_ticket_manager.entities.RefreshToken;
@@ -55,5 +56,17 @@ public class AuthManager implements AuthService {
 		savedRefreshToken.setUser(user);
 		this.refreshTokenRepository.save(savedRefreshToken);
 		return new AuthResponse(accessToken,refreshToken);
+	}
+
+	@Override
+	public AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+		RefreshToken refreshToken = this.refreshTokenRepository.findByRefreshToken(refreshTokenRequest.getRefreshToken()).orElseThrow();
+		UserDetails userDetails = this.userDetailsService.loadUserByUsername(refreshToken.getUser().getUsername());
+		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
+		String newRefreshToken = this.jwtUtil.generateRefreshToken(userDetails);
+		refreshToken.setToken(newRefreshToken);
+		refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 7));
+		this.refreshTokenRepository.save(refreshToken);
+		return new AuthResponse(accessToken,newRefreshToken);
 	}
 }
