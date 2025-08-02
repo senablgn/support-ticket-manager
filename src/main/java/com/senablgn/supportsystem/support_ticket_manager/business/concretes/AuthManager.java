@@ -39,9 +39,10 @@ public class AuthManager implements AuthService {
 
 	@Override
 	public AuthResponse login(AuthRequest authRequest) {
-		this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-		UserDetails userDetails = this.userDetailsService.loadUserByUsername(authRequest.getUsername());
-		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
-		return new AuthResponse(accessToken);
+//		this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+//		UserDetails userDetails = this.userDetailsService.loadUserByUsername(authRequest.getUsername());
+//		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
+//		return new AuthResponse(accessToken);
+		return null;
 	}
 }
