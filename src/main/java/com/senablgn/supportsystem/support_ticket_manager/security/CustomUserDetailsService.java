@@ -1,4 +1,4 @@
-package com.senablgn.supportsystem.support_ticket_manager.business.concretes;
+package com.senablgn.supportsystem.support_ticket_manager.security;
 
 import com.senablgn.supportsystem.support_ticket_manager.dataAccess.UserRepository;
 import com.senablgn.supportsystem.support_ticket_manager.entities.User;
@@ -15,10 +15,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = this.userRepository.findByUsername(username).orElseThrow();
-		return org.springframework.security.core.userdetails.User.builder()
-				.username(user.getUsername())
-				.password(user.getPassword())
-				.roles(user.getRole().replaceFirst("_ROLE",""))
-				.build();
+		return new CustomUserDetails(user);
 	}
 }

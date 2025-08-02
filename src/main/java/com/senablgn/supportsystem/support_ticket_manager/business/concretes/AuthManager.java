@@ -26,7 +26,7 @@ import com.senablgn.supportsystem.support_ticket_manager.entities.User;
 import com.senablgn.supportsystem.support_ticket_manager.exceptions.BaseException;
 import com.senablgn.supportsystem.support_ticket_manager.exceptions.ErrorMessage;
 import com.senablgn.supportsystem.support_ticket_manager.exceptions.MessageType;
-import com.senablgn.supportsystem.support_ticket_manager.jwt.JwtUtil;
+import com.senablgn.supportsystem.support_ticket_manager.security.JwtUtil;
 
 import lombok.AllArgsConstructor;
 
