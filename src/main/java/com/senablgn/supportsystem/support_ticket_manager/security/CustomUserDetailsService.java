@@ -1,4 +1,4 @@
-package com.senablgn.supportsystem.support_ticket_manager.business.concretes;
+package com.senablgn.supportsystem.support_ticket_manager.security;
 
 import com.senablgn.supportsystem.support_ticket_manager.dataAccess.UserRepository;
 import com.senablgn.supportsystem.support_ticket_manager.entities.User;

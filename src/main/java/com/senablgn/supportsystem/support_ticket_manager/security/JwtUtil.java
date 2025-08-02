@@ -1,4 +1,4 @@
-package com.senablgn.supportsystem.support_ticket_manager.jwt;
+package com.senablgn.supportsystem.support_ticket_manager.security;
 
 import java.security.Key;
 import java.util.Date;
