@@ -3,6 +3,7 @@ package com.senablgn.supportsystem.support_ticket_manager.api.controller;
 import com.senablgn.supportsystem.support_ticket_manager.business.abstracts.AuthService;
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.DataResult;
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.SuccessDataResult;
+import com.senablgn.supportsystem.support_ticket_manager.dto.request.AuthRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.CreateUserRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +21,9 @@ public class AuthController {
 	@PostMapping("/register")
 	public ResponseEntity<DataResult>register(@RequestBody CreateUserRequest createUserRequest) {
 		return ResponseEntity.ok(new SuccessDataResult("user registered", authService.register(createUserRequest)));
+	}
+	@PostMapping("/login")
+	public ResponseEntity<DataResult>login(@RequestBody AuthRequest authRequest) {
+		return ResponseEntity.ok(new SuccessDataResult("user login", authService.login(authRequest)));
 	}
 }
