@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TicketService {
 	List<TicketResponse> getAllTickets();
+	TicketResponse getTicketById(Long id);
 }
