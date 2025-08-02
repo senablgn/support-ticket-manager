@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.senablgn.supportsystem.support_ticket_manager.business.abstracts.AuthService;
 import com.senablgn.supportsystem.support_ticket_manager.core.mappers.ModelMapperService;
+import com.senablgn.supportsystem.support_ticket_manager.dataAccess.BlackListedTokenRepository;
 import com.senablgn.supportsystem.support_ticket_manager.dataAccess.RefreshTokenRepository;
 import com.senablgn.supportsystem.support_ticket_manager.dataAccess.UserRepository;
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.AuthRequest;
@@ -19,6 +20,7 @@ import com.senablgn.supportsystem.support_ticket_manager.dto.request.CreateUserR
 import com.senablgn.supportsystem.support_ticket_manager.dto.request.RefreshTokenRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.response.AuthResponse;
 import com.senablgn.supportsystem.support_ticket_manager.dto.response.UserResponse;
+import com.senablgn.supportsystem.support_ticket_manager.entities.BlackListedToken;
 import com.senablgn.supportsystem.support_ticket_manager.entities.RefreshToken;
 import com.senablgn.supportsystem.support_ticket_manager.entities.User;
 import com.senablgn.supportsystem.support_ticket_manager.exceptions.BaseException;
@@ -38,6 +40,7 @@ public class AuthManager implements AuthService {
 	private AuthenticationManager authenticationManager;
 	private UserDetailsService userDetailsService;
 	private RefreshTokenRepository refreshTokenRepository;
+	private BlackListedTokenRepository blackListedTokenRepository;
 
 	@Override
 	public UserResponse register(CreateUserRequest createUserRequest) {
@@ -80,5 +83,25 @@ public class AuthManager implements AuthService {
 		refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 7));
 		this.refreshTokenRepository.save(refreshToken);
 		return new AuthResponse(accessToken, newRefreshToken);
+	}
+
+	@Override
+	public void logout(String authHeader) {
+		if (authHeader == null && !authHeader.startsWith("Bearer ")) {
+			throw new BaseException(new ErrorMessage(MessageType.MISSING_TOKEN, authHeader));
+		}
+		String token = authHeader.substring(7);
+		if (blackListedTokenRepository.existsByToken(token)) {
+			throw new BaseException(new ErrorMessage(MessageType.INVALID_TOKEN, token));
+		}
+		BlackListedToken blackListedToken = new BlackListedToken();
+		blackListedToken.setToken(token);
+		blackListedToken.setBlackListedAt(new Date());
+		blackListedToken.setExpiresAt(this.jwtUtil.extractExpiration(token));
+		String username = this.jwtUtil.extractUsername(token);
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.USER_NOT_FOUND, username)));
+		blackListedToken.setUser(user);
+		this.blackListedTokenRepository.save(blackListedToken);
 	}
 }
