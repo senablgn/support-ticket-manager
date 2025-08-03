@@ -4,15 +4,13 @@ import com.senablgn.supportsystem.support_ticket_manager.business.abstracts.Tick
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.DataResult;
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.SuccessDataResult;
 import com.senablgn.supportsystem.support_ticket_manager.core.utilities.results.SuccessResult;
+import com.senablgn.supportsystem.support_ticket_manager.dto.request.CreateTicketRequest;
 import com.senablgn.supportsystem.support_ticket_manager.dto.response.TicketResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,5 +32,10 @@ public class TicketsController {
 	@PreAuthorize("hasRole('ADMIN') or #id==authentication.principal.id")
 	public ResponseEntity<DataResult>getTicketById(@PathVariable Long id){
 		return ResponseEntity.ok(new SuccessDataResult("ticket found", this.ticketService.getTicketById(id)));
+	}
+	@PostMapping("/create")
+	@PreAuthorize("hasAnyRole('ADMIN','USER')")
+	public ResponseEntity<DataResult>createTicket(@RequestBody CreateTicketRequest createTicketRequest){
+		return ResponseEntity.ok(new SuccessDataResult("ticket created", this.ticketService.createTicket(createTicketRequest)));
 	}
 }

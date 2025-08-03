@@ -2,6 +2,7 @@ package com.senablgn.supportsystem.support_ticket_manager.business.concretes;
 
 import java.util.Date;
 
+import com.senablgn.supportsystem.support_ticket_manager.security.CustomUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,7 +57,7 @@ public class AuthManager implements AuthService {
 	public AuthResponse login(AuthRequest authRequest) {
 		Authentication authenticate = this.authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-		UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
+		UserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
 		String accessToken = this.jwtUtil.generateJwtToken(userDetails);
 		String refreshToken = this.jwtUtil.generateRefreshToken(userDetails);
 		User user = this.userRepository.findByUsername(authRequest.getUsername()).orElseThrow();
