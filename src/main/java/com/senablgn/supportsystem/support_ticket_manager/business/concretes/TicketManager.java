@@ -61,4 +61,14 @@ public class TicketManager implements TicketService {
 		TicketResponse ticketResponse = this.modelMapperService.forResponse().map(ticket, TicketResponse.class);
 		return ticketResponse;
 	}
+
+	@Override
+	public List<TicketResponse> getTicketsByUserId() {
+		CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		List<Ticket> tickets = this.ticketRepository.findByUserId(currentUser.getId());
+		List<TicketResponse> ticketResponse = tickets.stream()
+				.map(ticket -> modelMapperService.forResponse().map(ticket, TicketResponse.class))
+				.collect(Collectors.toList());
+		return ticketResponse;
+	}
 }

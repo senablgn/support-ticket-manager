@@ -28,7 +28,7 @@ public class TicketsController {
 	public ResponseEntity<DataResult<List<TicketResponse>>>getAllTickets(){
 		return ResponseEntity.ok(new SuccessDataResult("tickets", this.ticketService.getAllTickets()));
 	}
-	@GetMapping("/{id}")
+	@GetMapping("/admin/{id}")
 	@PreAuthorize("hasRole('ADMIN') or #id==authentication.principal.id")
 	public ResponseEntity<DataResult>getTicketById(@PathVariable Long id){
 		return ResponseEntity.ok(new SuccessDataResult("ticket found", this.ticketService.getTicketById(id)));
@@ -37,5 +37,10 @@ public class TicketsController {
 	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	public ResponseEntity<DataResult>createTicket(@RequestBody CreateTicketRequest createTicketRequest){
 		return ResponseEntity.ok(new SuccessDataResult("ticket created", this.ticketService.createTicket(createTicketRequest)));
+	}
+	@GetMapping("/my-tickets")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<DataResult>getTicketsByUserId(){
+		return ResponseEntity.ok(new SuccessDataResult("tickets", this.ticketService.getTicketsByUserId()));
 	}
 }

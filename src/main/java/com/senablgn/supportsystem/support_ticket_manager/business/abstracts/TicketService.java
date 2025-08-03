@@ -9,4 +9,5 @@ public interface TicketService {
 	List<TicketResponse> getAllTickets();
 	TicketResponse getTicketById(Long id);
 	TicketResponse createTicket(CreateTicketRequest createTicketRequest);
+	List<TicketResponse> getTicketsByUserId();
 }
